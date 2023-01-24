@@ -1,5 +1,6 @@
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import HomeIcon from "@mui/icons-material/Home";
+import MenuIcon from "@mui/icons-material/Menu";
 import { SpeedDialAction, useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
 import SpeedDial from "@mui/material/SpeedDial";
@@ -18,9 +19,8 @@ export const AppLayout: FC = () => {
       {outlet}
 
       <SpeedDial
-        ariaLabel="SpeedDial basic example"
+        ariaLabel="Menu"
         icon={<SpeedDialIcon />}
-        open={true}
         sx={{
           "& svg": {
             display: "block",
@@ -39,20 +39,22 @@ export const AppLayout: FC = () => {
         }}
       >
         <SpeedDialAction
+          aria-label="Home"
           icon={
             <Link to="/">
               <HomeIcon />
             </Link>
           }
-          tooltipTitle="ホーム"
+          tooltipTitle="Home"
         />
         <SpeedDialAction
+          aria-label="Camera"
           icon={
             <Link to="/camera">
               <CameraAltIcon />
             </Link>
           }
-          tooltipTitle="カメラ"
+          tooltipTitle="Camera"
         />
       </SpeedDial>
     </Box>
