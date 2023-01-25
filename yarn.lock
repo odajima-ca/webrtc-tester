@@ -2306,6 +2306,11 @@
   "resolved" "https://registry.npmjs.org/@types/trusted-types/-/trusted-types-2.0.2.tgz"
   "version" "2.0.2"
 
+"@types/ua-parser-js@^0":
+  "integrity" "sha512-N1rW+njavs70y2cApeIw1vLMYXRwfBy+7trgavGuuTfOd7j1Yh7QTRc/yqsPl6ncokt72ZXuxEU0PiCp9bSwNQ=="
+  "resolved" "https://registry.npmjs.org/@types/ua-parser-js/-/ua-parser-js-0.7.36.tgz"
+  "version" "0.7.36"
+
 "@types/ws@^8.5.1":
   "integrity" "sha512-zdQDHKUgcX/zBc4GrwsE/7dVdAD8JR4EuiAXiiUhhfyIJXXb2+PrGshFyeXWQPMmmZ2XxgaqclgpIC7eTXc1mg=="
   "resolved" "https://registry.npmjs.org/@types/ws/-/ws-8.5.4.tgz"
@@ -3909,6 +3914,11 @@
     "acorn-node" "^1.8.2"
     "defined" "^1.0.0"
     "minimist" "^1.2.6"
+
+"detectrtc@^1":
+  "integrity" "sha512-lxvyNN6/dSnwoVj1VstVFHel7S0BTmkfv1+01IBEy42D20pue27eB/MfphUOQz78jJ7WcQJDo6ZybhgBlUDi0Q=="
+  "resolved" "https://registry.npmjs.org/detectrtc/-/detectrtc-1.4.1.tgz"
+  "version" "1.4.1"
 
 "didyoumean@^1.2.2":
   "integrity" "sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw=="
@@ -9186,6 +9196,11 @@
   "integrity" "sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg=="
   "resolved" "https://registry.npmjs.org/typescript/-/typescript-4.9.4.tgz"
   "version" "4.9.4"
+
+"ua-parser-js@^1":
+  "integrity" "sha512-RqshF7TPTE0XLYAqmjlu5cLLuGdKrNu9O1KLA/qp39QtbZwuzwv1dT46DZSopoUMsYgXpB3Cv8a03FI8b74oFQ=="
+  "resolved" "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-1.0.33.tgz"
+  "version" "1.0.33"
 
 "unbox-primitive@^1.0.2":
   "integrity" "sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw=="
