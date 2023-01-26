@@ -11,9 +11,9 @@ import {
   Typography,
 } from "@mui/material";
 import React, { FC, useState } from "react";
+import Highlight from "react-highlight";
 
 import { useMediaStream } from "../providers/MediaStreamProvider";
-import { FallbackListItemText } from "./FallbackListItemText";
 
 export const VideoTrackInfoDialog: FC<DialogProps> = (props) => {
   const { videoTrackInfo } = useMediaStream();
@@ -25,7 +25,7 @@ export const VideoTrackInfoDialog: FC<DialogProps> = (props) => {
       <Dialog {...props}>
         <DialogTitle>Video Track Info</DialogTitle>
         <DialogContent>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider", overflowX: "scroll" }}>
             <Tabs
               aria-label="basic tabs example"
               onChange={(event, newTabName) => {
@@ -38,12 +38,12 @@ export const VideoTrackInfoDialog: FC<DialogProps> = (props) => {
               <Tab label="capabilities" value="capabilities" />
             </Tabs>
           </Box>
-          {tabName === "settings" && <Box component="pre">{JSON.stringify(videoTrackInfo?.settings, null, "\t")}</Box>}
+          {tabName === "settings" && <Highlight>{JSON.stringify(videoTrackInfo?.settings, null, "\t")}</Highlight>}
           {tabName === "constraints" && (
-            <Box component="pre">{JSON.stringify(videoTrackInfo?.constraints, null, "\t")}</Box>
+            <Highlight>{JSON.stringify(videoTrackInfo?.constraints, null, "\t")}</Highlight>
           )}
           {tabName === "capabilities" && (
-            <Box component="pre">{JSON.stringify(videoTrackInfo?.capabilities, null, "\t")}</Box>
+            <Highlight>{JSON.stringify(videoTrackInfo?.capabilities, null, "\t")}</Highlight>
           )}
         </DialogContent>
       </Dialog>
