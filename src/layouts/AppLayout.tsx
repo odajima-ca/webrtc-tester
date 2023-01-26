@@ -60,7 +60,7 @@ export const AppLayout: FC<AppLayoutProps> = ({ children, fab, rightMenuItems = 
   };
 
   return (
-    <Box sx={{ height, width: "100vw" }}>
+    <Box sx={{ height, pb: 7, width: "100vw" }}>
       {children}
 
       <AppBar color="primary" position="fixed" sx={{ bottom: 0, top: "auto" }}>

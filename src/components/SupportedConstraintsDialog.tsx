@@ -1,13 +1,12 @@
 import { Dialog, DialogProps, DialogTitle, List, ListItem, Typography } from "@mui/material";
 import React, { FC } from "react";
 
+import { useMediaStream } from "../providers/MediaStreamProvider";
 import { FallbackListItemText } from "./FallbackListItemText";
 
-export type SupportedConstraintsDialogProps = DialogProps & {
-  supportedConstraints?: MediaTrackSupportedConstraints;
-};
+export const SupportedConstraintsDialog: FC<DialogProps> = (props) => {
+  const { supportedConstraints } = useMediaStream();
 
-export const SupportedConstraintsDialog: FC<SupportedConstraintsDialogProps> = ({ supportedConstraints, ...props }) => {
   if (supportedConstraints) {
     return (
       <Dialog {...props}>
