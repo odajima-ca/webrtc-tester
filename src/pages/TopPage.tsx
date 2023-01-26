@@ -1,8 +1,12 @@
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
-import { Box } from "@mui/material";
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import { Box, Dialog, DialogTitle, List, ListItem, ListItemButton } from "@mui/material";
+import DetectRTC from "detectrtc";
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { FallbackListItemText } from "../components/FallbackListItemText";
+import { SupportedConstraintsDialog, SupportedConstraintsDialogProps } from "../components/SupportedConstraintsDialog";
+import { useBooleanState } from "../hooks/useBooleanState";
 import { AppLayout } from "../layouts/AppLayout";
 import { useSnackbar } from "../providers/SnackbarProvider";
 
@@ -13,15 +17,16 @@ export const TopPage: FC = () => {
 
   const [mediaDevices, setMediaDevices] = useState<MediaDeviceInfo[]>([]);
 
-  const [supportedConstraints, setSupportedConstraints] = useState<MediaTrackSupportedConstraints | null>(null);
-
-  const [isPlayed, setIsPlayed] = useState(false);
-
-  const onToggleExpand = useCallback(() => {
-    setIsPlayed((currentExpanded) => !currentExpanded);
-  }, []);
+  const [supportedConstraints, setSupportedConstraints] =
+    useState<SupportedConstraintsDialogProps["supportedConstraints"]>();
 
   const { showSnack } = useSnackbar();
+
+  const {
+    isTruthy: isVideoPlayed,
+    onTruthy: playVideoState,
+    onFalsy: stopVideoState,
+  } = useBooleanState({ isTruthy: false });
 
   const playVideo = useCallback(async () => {
     const video = videoRef.current;
@@ -34,14 +39,14 @@ export const TopPage: FC = () => {
       video.setAttribute("playsinline", "playsinline");
       video.srcObject = mediaStream;
       await video.play();
-      setIsPlayed(true);
+      playVideoState();
 
       const newMediaDevices = await navigator.mediaDevices.enumerateDevices();
       setMediaDevices(newMediaDevices);
       setSupportedConstraints(navigator.mediaDevices.getSupportedConstraints());
 
       showSnack({
-        message: "started",
+        message: "Started",
         security: "info",
       });
     } catch (error: any) {
@@ -50,7 +55,7 @@ export const TopPage: FC = () => {
         security: "error",
       });
     }
-  }, [showSnack]);
+  }, [playVideoState, showSnack]);
 
   const stopVideo = useCallback(() => {
     const video = videoRef.current;
@@ -61,28 +66,60 @@ export const TopPage: FC = () => {
       track.stop();
     });
     video.srcObject = null;
-    setIsPlayed(false);
-  }, []);
+    stopVideoState();
+    showSnack({
+      message: "Stopped",
+      security: "info",
+    });
+  }, [stopVideoState, showSnack]);
 
   const toggleVideo = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    isPlayed ? stopVideo() : playVideo();
-  }, [isPlayed, playVideo, stopVideo]);
+    video.paused ? playVideo() : stopVideo();
+  }, [playVideo, stopVideo]);
 
-  useEffect(() => stopVideo, [stopVideo]);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    return () => {
+      const mediaStream = video.srcObject as MediaStream;
+      mediaStream?.getTracks().forEach((track) => {
+        track.stop();
+      });
+      video.srcObject = null;
+    };
+  }, []);
+
+  const {
+    isTruthy: isOpenSupportedConstraints,
+    onTruthy: openSupportedConstraints,
+    onFalsy: closeSupportedConstraints,
+  } = useBooleanState({ isTruthy: false });
 
   return (
     <AppLayout
       fab={{
-        children: isPlayed ? <StopIcon /> : <PlayArrowIcon />,
+        children: isVideoPlayed ? <StopIcon /> : <PlayArrowIcon />,
         onClick: toggleVideo,
       }}
+      rightMenuItems={[
+        {
+          label: "Show supported constraints",
+          onClick: openSupportedConstraints,
+        },
+      ]}
     >
       <Box sx={{ "&>video": { height: "100%", width: "100%" }, height: "100%", width: "100%" }}>
         <video height="100%" ref={videoRef} width="100%" />
       </Box>
+      <SupportedConstraintsDialog
+        onClose={closeSupportedConstraints}
+        open={isOpenSupportedConstraints}
+        supportedConstraints={supportedConstraints}
+      />
     </AppLayout>
   );
 };

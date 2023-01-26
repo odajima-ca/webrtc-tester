@@ -36,7 +36,12 @@ export const SnackbarProvider: FC<PropsWithChildren> = ({ children }) => {
       {children}
 
       {first && (
-        <Snackbar {...first} onClose={onClose}>
+        <Snackbar
+          {...first}
+          anchorOrigin={{ horizontal: "center", vertical: "top" }}
+          autoHideDuration={2000}
+          onClose={onClose}
+        >
           <Alert onClose={onClose} severity="success" sx={{ width: "100%" }}>
             {first.message}
           </Alert>

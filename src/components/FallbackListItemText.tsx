@@ -1,11 +1,11 @@
 import { ListItemText as MuiListItemText, ListItemTextProps as MuiListItemTextProps } from "@mui/material";
 import React, { FC, ReactNode, useMemo } from "react";
 
-type ListItemTextProps = MuiListItemTextProps & {
+type FallbackListItemTextProps = MuiListItemTextProps & {
   fallback?: ReactNode;
 };
 
-export const ListItemText: FC<ListItemTextProps> = ({ fallback, secondary, ...props }) => {
+export const FallbackListItemText: FC<FallbackListItemTextProps> = ({ fallback = "---", secondary, ...props }) => {
   const isBoolean = useMemo(() => typeof secondary === "boolean", [secondary]);
 
   if (isBoolean) {
