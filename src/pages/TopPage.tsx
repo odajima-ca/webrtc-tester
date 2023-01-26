@@ -5,6 +5,7 @@ import React, { FC, useEffect } from "react";
 
 import { SupportedConstraintsDialog } from "../components/SupportedConstraintsDialog";
 import { VideoMediaDeviceDialog } from "../components/VideoMediaDeviceDialog";
+import { VideoTrackInfoDialog } from "../components/VideoTrackInfoDialog";
 import { useBooleanState } from "../hooks/useBooleanState";
 import { AppLayout } from "../layouts/AppLayout";
 import { useMediaStream } from "../providers/MediaStreamProvider";
@@ -30,6 +31,12 @@ export const TopPage: FC = () => {
     onFalsy: closeVideoMediaDevice,
   } = useBooleanState({ isTruthy: false });
 
+  const {
+    isTruthy: isVideoTrackInfo,
+    onTruthy: openVideoTrackInfo,
+    onFalsy: closeVideoTrackInfo,
+  } = useBooleanState({ isTruthy: false });
+
   return (
     <AppLayout
       fab={{
@@ -45,6 +52,10 @@ export const TopPage: FC = () => {
           label: "Show video media device",
           onClick: openVideoMediaDevice,
         },
+        {
+          label: "Show video track info",
+          onClick: openVideoTrackInfo,
+        },
       ]}
     >
       <Box sx={{ "&>video": { height: "100%", width: "100%" }, height: "100%", width: "100%" }}>
@@ -53,6 +64,7 @@ export const TopPage: FC = () => {
 
       <SupportedConstraintsDialog onClose={closeSupportedConstraints} open={isOpenSupportedConstraints} />
       <VideoMediaDeviceDialog onClose={closeVideoMediaDevice} open={isVideoMediaDevice} />
+      <VideoTrackInfoDialog onClose={closeVideoTrackInfo} open={isVideoTrackInfo} />
     </AppLayout>
   );
 };

@@ -24,6 +24,13 @@ type MediaStreamContextValue = {
   currentVideoDeviceId: string;
   isVideoPlayed: boolean;
   onChangeConstraints: MediaStreamTrack["applyConstraints"];
+  videoTrackInfo:
+    | {
+        capabilities: MediaTrackCapabilities;
+        constraints: MediaTrackConstraints;
+        settings: MediaTrackSettings;
+      }
+    | undefined;
 };
 
 const MediaStreamContext = createContext<MediaStreamContextValue>({
@@ -36,6 +43,7 @@ const MediaStreamContext = createContext<MediaStreamContextValue>({
   supportedConstraints: undefined,
   videoDevices: [],
   videoRef: { current: null },
+  videoTrackInfo: undefined,
 });
 
 export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -48,6 +56,8 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
   const [currentVideoDeviceId, setCurrentVideoDeviceId] = useState("");
 
   const [supportedConstraints, setSupportedConstraints] = useState<MediaStreamContextValue["supportedConstraints"]>();
+
+  const [videoTrackInfo, setVideoTrackInfo] = useState<MediaStreamContextValue["videoTrackInfo"]>();
 
   const {
     isTruthy: isVideoPlayed,
@@ -70,6 +80,8 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
       await video.play();
       playVideoState();
 
+      setSupportedConstraints(navigator.mediaDevices.getSupportedConstraints());
+
       const newMediaDevices = await navigator.mediaDevices.enumerateDevices();
       setMediaDevices(newMediaDevices);
       setVideoDevices(newMediaDevices.filter((device) => device.kind === "videoinput"));
@@ -77,7 +89,14 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
       const videoTrack = mediaStream.getVideoTracks()[0];
       setCurrentVideoDeviceId(videoTrack?.getSettings().deviceId || "");
 
-      setSupportedConstraints(navigator.mediaDevices.getSupportedConstraints());
+      const settings = videoTrack.getSettings();
+      const constraints = videoTrack.getConstraints();
+      const capabilities = videoTrack.getCapabilities();
+      setVideoTrackInfo({
+        capabilities,
+        constraints,
+        settings,
+      });
 
       showSnack({
         message: "Start Media Stream",
@@ -154,16 +173,18 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
       supportedConstraints,
       videoDevices,
       videoRef,
+      videoTrackInfo,
     }),
     [
+      currentVideoDeviceId,
       isVideoPlayed,
       mediaDevices,
       onChangeConstraints,
       startMediaStream,
       stopMediaStream,
       supportedConstraints,
-      currentVideoDeviceId,
       videoDevices,
+      videoTrackInfo,
     ]
   );
 
