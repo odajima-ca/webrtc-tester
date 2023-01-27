@@ -42,7 +42,7 @@ export const SnackbarProvider: FC<PropsWithChildren> = ({ children }) => {
           autoHideDuration={2000}
           onClose={onClose}
         >
-          <Alert onClose={onClose} severity="success" sx={{ width: "100%" }}>
+          <Alert onClose={onClose} security={first.security} sx={{ width: "100%" }}>
             {first.message}
           </Alert>
         </Snackbar>

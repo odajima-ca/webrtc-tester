@@ -1,13 +1,13 @@
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import StopIcon from "@mui/icons-material/Stop";
 import { Box } from "@mui/material";
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useMemo } from "react";
 
 import { SupportedConstraintsDialog } from "../components/SupportedConstraintsDialog";
 import { VideoMediaDeviceDialog } from "../components/VideoMediaDeviceDialog";
 import { VideoTrackInfoDialog } from "../components/VideoTrackInfoDialog";
 import { useBooleanState } from "../hooks/useBooleanState";
-import { AppLayout } from "../layouts/AppLayout";
+import { AppLayout, AppLayoutProps } from "../layouts/AppLayout";
 import { useMediaStream } from "../providers/MediaStreamProvider";
 
 export const TopPage: FC = () => {
@@ -37,27 +37,40 @@ export const TopPage: FC = () => {
     onFalsy: closeVideoTrackInfo,
   } = useBooleanState({ isTruthy: false });
 
+  const fab = useMemo<AppLayoutProps["fab"]>(() => {
+    if (isVideoPlayed) {
+      return {
+        children: <StopIcon />,
+        onClick: () => stopMediaStream(),
+      };
+    }
+
+    return {
+      children: <PlayArrowIcon />,
+      onClick: () => startMediaStream(),
+    };
+  }, [isVideoPlayed, startMediaStream, stopMediaStream]);
+
+  const rightMenuItems = useMemo<AppLayoutProps["rightMenuItems"]>(
+    () => [
+      {
+        label: "Show supported constraints",
+        onClick: openSupportedConstraints,
+      },
+      {
+        label: "Show video media device",
+        onClick: openVideoMediaDevice,
+      },
+      {
+        label: "Show video track info",
+        onClick: openVideoTrackInfo,
+      },
+    ],
+    [openSupportedConstraints, openVideoMediaDevice, openVideoTrackInfo]
+  );
+
   return (
-    <AppLayout
-      fab={{
-        children: isVideoPlayed ? <StopIcon /> : <PlayArrowIcon />,
-        onClick: isVideoPlayed ? stopMediaStream : startMediaStream,
-      }}
-      rightMenuItems={[
-        {
-          label: "Show supported constraints",
-          onClick: openSupportedConstraints,
-        },
-        {
-          label: "Show video media device",
-          onClick: openVideoMediaDevice,
-        },
-        {
-          label: "Show video track info",
-          onClick: openVideoTrackInfo,
-        },
-      ]}
-    >
+    <AppLayout fab={fab} rightMenuItems={rightMenuItems}>
       <Box sx={{ "&>video": { height: "100%", width: "100%" }, height: "100%", width: "100%" }}>
         <video height="100%" ref={videoRef} width="100%" />
       </Box>

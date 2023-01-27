@@ -1,62 +1,51 @@
-import {
-  Box,
-  Dialog,
-  DialogContent,
-  DialogProps,
-  DialogTitle,
-  List,
-  ListItem,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { Box, Tab, Typography } from "@mui/material";
 import React, { FC, useState } from "react";
 import Highlight from "react-highlight";
 
 import { useMediaStream } from "../providers/MediaStreamProvider";
+import { FullScreenDialog, FullScreenDialogProps } from "./FullScreenDialog";
 
-export const VideoTrackInfoDialog: FC<DialogProps> = (props) => {
+export const VideoTrackInfoDialog: FC<Omit<FullScreenDialogProps, "title" | "onSubmit">> = (props) => {
   const { videoTrackInfo } = useMediaStream();
 
   const [tabName, setTabName] = useState("settings");
 
   if (videoTrackInfo) {
     return (
-      <Dialog {...props}>
-        <DialogTitle>Video Track Info</DialogTitle>
-        <DialogContent>
-          <Box sx={{ borderBottom: 1, borderColor: "divider", overflowX: "scroll" }}>
-            <Tabs
-              aria-label="basic tabs example"
+      <FullScreenDialog {...props} title="Video Track Info">
+        <TabContext value={tabName}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <TabList
+              aria-label="lab API tabs example"
               onChange={(event, newTabName) => {
                 setTabName(newTabName);
               }}
-              value={tabName}
+              scrollButtons={true}
+              variant="scrollable"
             >
               <Tab label="settings" value="settings" />
               <Tab label="constraints" value="constraints" />
               <Tab label="capabilities" value="capabilities" />
-            </Tabs>
+            </TabList>
           </Box>
-          {tabName === "settings" && <Highlight>{JSON.stringify(videoTrackInfo?.settings, null, "\t")}</Highlight>}
-          {tabName === "constraints" && (
+          <TabPanel sx={{ p: 0 }} value="settings">
+            <Highlight>{JSON.stringify(videoTrackInfo?.settings, null, "\t")}</Highlight>
+          </TabPanel>
+          <TabPanel sx={{ p: 0 }} value="constraints">
             <Highlight>{JSON.stringify(videoTrackInfo?.constraints, null, "\t")}</Highlight>
-          )}
-          {tabName === "capabilities" && (
+          </TabPanel>
+          <TabPanel sx={{ p: 0 }} value="capabilities">
             <Highlight>{JSON.stringify(videoTrackInfo?.capabilities, null, "\t")}</Highlight>
-          )}
-        </DialogContent>
-      </Dialog>
+          </TabPanel>
+        </TabContext>
+      </FullScreenDialog>
     );
   }
 
   return (
-    <Dialog {...props}>
-      <DialogTitle>Video Track Info</DialogTitle>
-      <Typography></Typography>
-      <List sx={{ pt: 0 }}>
-        <ListItem>Play Start Video</ListItem>
-      </List>
-    </Dialog>
+    <FullScreenDialog {...props} title="Video Track Info">
+      <Typography>Play Start Video</Typography>
+    </FullScreenDialog>
   );
 };

@@ -16,7 +16,7 @@
     "lint": "npm run __lint .",
     "lintfix": "npm run __lint --fix .",
     "sort-package-json": "sort-package-json '**/package.json' '!**/node_modules/**/package.json'",
-    "start": "react-scripts start",
+    "start": "HTTPS=true react-scripts start",
     "test": "react-scripts test"
   },
   "browserslist": {
@@ -58,6 +58,7 @@
     "@emotion/styled": "^11",
     "@fontsource/roboto": "^4",
     "@mui/icons-material": "^5",
+    "@mui/lab": "^5",
     "@mui/material": "^5",
     "@testing-library/jest-dom": "^5",
     "@testing-library/react": "^13",

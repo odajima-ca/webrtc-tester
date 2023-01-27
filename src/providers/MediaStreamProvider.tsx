@@ -16,7 +16,7 @@ import { useSnackbar } from "./SnackbarProvider";
 
 type MediaStreamContextValue = {
   videoRef: MutableRefObject<HTMLVideoElement | null>;
-  startMediaStream: VoidOrPromiseFunction;
+  startMediaStream: (args: { videoTrackConstraints?: MediaTrackConstraints } | void) => void | Promise<void>;
   stopMediaStream: VoidOrPromiseFunction;
   supportedConstraints?: MediaTrackSupportedConstraints;
   mediaDevices: MediaDeviceInfo[];
@@ -67,50 +67,59 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  const startMediaStream = useCallback(async () => {
-    try {
-      const video = videoRef.current;
-      if (!video) return;
+  const startMediaStream = useCallback<MediaStreamContextValue["startMediaStream"]>(
+    async (args) => {
+      try {
+        const video = videoRef.current;
+        if (!video) return;
 
-      const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
-      video.muted = true;
-      video.volume = 0;
-      video.setAttribute("playsinline", "playsinline");
-      video.srcObject = mediaStream;
-      await video.play();
-      playVideoState();
+        const mediaStream = await navigator.mediaDevices?.getUserMedia({
+          audio: false,
+          video: args?.videoTrackConstraints || true,
+        });
+        if (!mediaStream) return;
 
-      setSupportedConstraints(navigator.mediaDevices.getSupportedConstraints());
+        video.muted = true;
+        video.volume = 0;
+        video.setAttribute("playsinline", "playsinline");
+        video.srcObject = mediaStream;
+        await video.play();
+        playVideoState();
 
-      const newMediaDevices = await navigator.mediaDevices.enumerateDevices();
-      setMediaDevices(newMediaDevices);
-      setVideoDevices(newMediaDevices.filter((device) => device.kind === "videoinput"));
+        setSupportedConstraints(navigator.mediaDevices?.getSupportedConstraints());
 
-      const videoTrack = mediaStream.getVideoTracks()[0];
-      setCurrentVideoDeviceId(videoTrack?.getSettings().deviceId || "");
+        const newMediaDevices = await navigator.mediaDevices?.enumerateDevices();
+        setMediaDevices(newMediaDevices);
+        setVideoDevices(newMediaDevices.filter((device) => device.kind === "videoinput"));
 
-      const settings = videoTrack.getSettings();
-      const constraints = videoTrack.getConstraints();
-      const capabilities = videoTrack.getCapabilities();
-      setVideoTrackInfo({
-        capabilities,
-        constraints,
-        settings,
-      });
+        const videoTrack = mediaStream.getVideoTracks()[0];
+        setCurrentVideoDeviceId(videoTrack?.getSettings().deviceId || "");
 
-      showSnack({
-        message: "Start Media Stream",
-        security: "info",
-      });
-    } catch (error: any) {
-      showSnack({
-        message: error.toString(),
-        security: "error",
-      });
-    }
-  }, [playVideoState, setCurrentVideoDeviceId, showSnack]);
+        const settings = videoTrack.getSettings();
+        const constraints = videoTrack.getConstraints();
+        const capabilities = videoTrack.getCapabilities();
+        setVideoTrackInfo({
+          capabilities,
+          constraints,
+          settings,
+        });
 
-  const stopMediaStream = useCallback(() => {
+        showSnack({
+          message: "Start Media Stream",
+          security: "info",
+        });
+      } catch (error: any) {
+        console.error(error);
+        showSnack({
+          message: error.toString(),
+          security: "error",
+        });
+      }
+    },
+    [playVideoState, setCurrentVideoDeviceId, showSnack]
+  );
+
+  const stopMediaStream = useCallback<MediaStreamContextValue["stopMediaStream"]>(() => {
     try {
       const video = videoRef.current;
       if (!video) return;
@@ -128,6 +137,7 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
         security: "info",
       });
     } catch (error: any) {
+      console.error(error);
       showSnack({
         message: error.toString(),
         security: "error",
@@ -137,6 +147,16 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const onChangeConstraints = useCallback<MediaStreamContextValue["onChangeConstraints"]>(
     async (constraints) => {
+      if (constraints?.deviceId) {
+        stopMediaStream();
+        startMediaStream({
+          videoTrackConstraints: {
+            deviceId: constraints.deviceId,
+          },
+        });
+        return;
+      }
+
       try {
         const video = videoRef.current;
         if (!video) return;
@@ -153,13 +173,14 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
           security: "info",
         });
       } catch (error: any) {
+        console.error(error);
         showSnack({
           message: error.toString(),
           security: "error",
         });
       }
     },
-    [showSnack]
+    [showSnack, startMediaStream, stopMediaStream]
   );
 
   const value = useMemo(

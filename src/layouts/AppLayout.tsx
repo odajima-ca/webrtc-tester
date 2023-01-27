@@ -31,7 +31,7 @@ const leftMenuItems: LinkMenuItemProps[] = [
   },
 ];
 
-type AppLayoutProps = PropsWithChildren<{
+export type AppLayoutProps = PropsWithChildren<{
   fab: FabProps;
   rightMenuItems?: LinkMenuItemProps[];
 }>;
