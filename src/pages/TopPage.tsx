@@ -6,6 +6,7 @@ import React, { FC, useEffect, useMemo } from "react";
 import { ApplyConstraintsDialog } from "../components/ApplyConstraintsDialog";
 import { SupportedConstraintsDialog } from "../components/SupportedConstraintsDialog";
 import { VideoMediaDeviceDialog } from "../components/VideoMediaDeviceDialog";
+import { VideoSizeDialog } from "../components/VideoSizeDialog";
 import { VideoTrackInfoDialog } from "../components/VideoTrackInfoDialog";
 import { useBooleanState } from "../hooks/useBooleanState";
 import { AppLayout, AppLayoutProps } from "../layouts/AppLayout";
@@ -44,6 +45,12 @@ export const TopPage: FC = () => {
     onFalsy: closeApplyConstraints,
   } = useBooleanState({ isTruthy: false });
 
+  const {
+    isTruthy: isOpenVideoSize,
+    onTruthy: openVideoSize,
+    onFalsy: closeVideoSize,
+  } = useBooleanState({ isTruthy: false });
+
   const fab = useMemo<AppLayoutProps["fab"]>(() => {
     if (isVideoPlayed) {
       return {
@@ -76,8 +83,12 @@ export const TopPage: FC = () => {
         label: "Show apply constraints",
         onClick: openApplyConstraints,
       },
+      {
+        label: "Show video size",
+        onClick: openVideoSize,
+      },
     ],
-    [openApplyConstraints, openSupportedConstraints, openVideoMediaDevice, openVideoTrackInfo]
+    [openApplyConstraints, openSupportedConstraints, openVideoMediaDevice, openVideoSize, openVideoTrackInfo]
   );
 
   return (
@@ -90,6 +101,7 @@ export const TopPage: FC = () => {
       <VideoMediaDeviceDialog onClose={closeVideoMediaDevice} open={isVideoMediaDevice} />
       <VideoTrackInfoDialog onClose={closeVideoTrackInfo} open={isVideoTrackInfo} />
       <ApplyConstraintsDialog onClose={closeApplyConstraints} open={isOpenApplyConstraints} />
+      <VideoSizeDialog onClose={closeVideoSize} open={isOpenVideoSize} />
     </AppLayout>
   );
 };

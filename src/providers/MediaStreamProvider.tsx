@@ -144,20 +144,38 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const onChangeConstraints = useCallback<MediaStreamContextValue["onChangeConstraints"]>(
     async (constraints) => {
+      const video = videoRef.current;
+      if (!video) return;
+
+      const mediaStream = video.srcObject as MediaStream;
+      const videoTrack = mediaStream.getVideoTracks()[0];
+      if (!videoTrack) return;
+
+      const advanced: MediaTrackConstraintSet[] = [];
+
+      advanced.push(videoTrack.getConstraints());
+
       if (constraints?.deviceId) {
+        advanced.push({ deviceId: constraints.deviceId });
+      }
+
+      if (constraints?.height) {
+        advanced.push({ height: constraints.height });
+      }
+
+      if (constraints?.width) {
+        advanced.push({ width: constraints.width });
+      }
+
+      if (constraints?.deviceId || constraints?.height || constraints?.width) {
         stopMediaStream();
         startMediaStream({
-          videoTrackConstraints: {
-            deviceId: constraints.deviceId,
-          },
+          videoTrackConstraints: { advanced },
         });
         return;
       }
 
       try {
-        const video = videoRef.current;
-        if (!video) return;
-
         const mediaStream = video.srcObject as MediaStream;
         const videoTrack = mediaStream.getVideoTracks()[0];
 
