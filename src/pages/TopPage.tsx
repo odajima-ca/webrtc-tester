@@ -28,12 +28,6 @@ export const TopPage: FC = () => {
   } = useBooleanState({ isTruthy: false });
 
   const {
-    isTruthy: isVideoMediaDevice,
-    onTruthy: openVideoMediaDevice,
-    onFalsy: closeVideoMediaDevice,
-  } = useBooleanState({ isTruthy: false });
-
-  const {
     isTruthy: isVideoTrackInfo,
     onTruthy: openVideoTrackInfo,
     onFalsy: closeVideoTrackInfo,
@@ -43,12 +37,6 @@ export const TopPage: FC = () => {
     isTruthy: isOpenApplyConstraints,
     onTruthy: openApplyConstraints,
     onFalsy: closeApplyConstraints,
-  } = useBooleanState({ isTruthy: false });
-
-  const {
-    isTruthy: isOpenVideoSize,
-    onTruthy: openVideoSize,
-    onFalsy: closeVideoSize,
   } = useBooleanState({ isTruthy: false });
 
   const fab = useMemo<AppLayoutProps["fab"]>(() => {
@@ -72,10 +60,6 @@ export const TopPage: FC = () => {
         onClick: openSupportedConstraints,
       },
       {
-        label: "Show video media device",
-        onClick: openVideoMediaDevice,
-      },
-      {
         label: "Show video track info",
         onClick: openVideoTrackInfo,
       },
@@ -83,12 +67,8 @@ export const TopPage: FC = () => {
         label: "Show apply constraints",
         onClick: openApplyConstraints,
       },
-      {
-        label: "Show video size",
-        onClick: openVideoSize,
-      },
     ],
-    [openApplyConstraints, openSupportedConstraints, openVideoMediaDevice, openVideoSize, openVideoTrackInfo]
+    [openApplyConstraints, openSupportedConstraints, openVideoTrackInfo]
   );
 
   return (
@@ -98,10 +78,8 @@ export const TopPage: FC = () => {
       </Box>
 
       <SupportedConstraintsDialog onClose={closeSupportedConstraints} open={isOpenSupportedConstraints} />
-      <VideoMediaDeviceDialog onClose={closeVideoMediaDevice} open={isVideoMediaDevice} />
       <VideoTrackInfoDialog onClose={closeVideoTrackInfo} open={isVideoTrackInfo} />
       <ApplyConstraintsDialog onClose={closeApplyConstraints} open={isOpenApplyConstraints} />
-      <VideoSizeDialog onClose={closeVideoSize} open={isOpenVideoSize} />
     </AppLayout>
   );
 };

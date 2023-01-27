@@ -1,6 +1,6 @@
 import { DevTool } from "@hookform/devtools";
 import { Button, FormControl, FormControlLabel, Radio, RadioGroup, Stack, Typography } from "@mui/material";
-import React, { FC, useCallback, useMemo } from "react";
+import React, { FC, useCallback } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 import { useMediaStream } from "../providers/MediaStreamProvider";

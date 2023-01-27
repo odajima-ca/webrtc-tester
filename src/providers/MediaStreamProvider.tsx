@@ -129,6 +129,9 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
 
       stopVideoState();
 
+      setVideoTrackInfo(undefined);
+      setCurrentVideoDeviceId("");
+
       showSnack({
         message: "Stop Media Stream",
         security: "info",
@@ -153,24 +156,42 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
 
       const advanced: MediaTrackConstraintSet[] = [];
 
-      advanced.push(videoTrack.getConstraints());
+      const deviceId = videoTrack.getSettings().deviceId;
 
-      if (constraints?.deviceId) {
-        advanced.push({ deviceId: constraints.deviceId });
-      }
+      advanced.push({
+        deviceId: constraints?.deviceId || deviceId,
+      });
 
       if (constraints?.height) {
-        advanced.push({ height: constraints.height });
+        advanced.push({
+          height: constraints.height,
+        });
       }
 
       if (constraints?.width) {
-        advanced.push({ width: constraints.width });
+        advanced.push({
+          width: constraints.width,
+        });
       }
 
-      if (constraints?.deviceId || constraints?.height || constraints?.width) {
+      if (constraints?.aspectRatio) {
+        advanced.push({
+          aspectRatio: constraints.aspectRatio,
+        });
+      }
+
+      showSnack({
+        message: JSON.stringify(constraints),
+        security: "info",
+      });
+
+      if (constraints?.deviceId || constraints?.height || constraints?.width || constraints?.aspectRatio) {
         stopMediaStream();
         startMediaStream({
-          videoTrackConstraints: { advanced },
+          videoTrackConstraints: {
+            ...constraints,
+            advanced,
+          },
         });
         return;
       }
