@@ -95,13 +95,10 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
         const videoTrack = mediaStream.getVideoTracks()[0];
         setCurrentVideoDeviceId(videoTrack?.getSettings().deviceId || "");
 
-        const settings = videoTrack.getSettings();
-        const constraints = videoTrack.getConstraints();
-        const capabilities = videoTrack.getCapabilities();
         setVideoTrackInfo({
-          capabilities,
-          constraints,
-          settings,
+          capabilities: videoTrack.getCapabilities(),
+          constraints: videoTrack.getConstraints(),
+          settings: videoTrack.getSettings(),
         });
 
         showSnack({
@@ -167,6 +164,13 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
         if (!videoTrack) return;
 
         await videoTrack?.applyConstraints(constraints);
+        setCurrentVideoDeviceId(videoTrack?.getSettings().deviceId || "");
+
+        setVideoTrackInfo({
+          capabilities: videoTrack.getCapabilities(),
+          constraints: videoTrack.getConstraints(),
+          settings: videoTrack.getSettings(),
+        });
 
         showSnack({
           message: "Apply Constraints",

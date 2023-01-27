@@ -3,6 +3,7 @@ import StopIcon from "@mui/icons-material/Stop";
 import { Box } from "@mui/material";
 import React, { FC, useEffect, useMemo } from "react";
 
+import { ApplyConstraintsDialog } from "../components/ApplyConstraintsDialog";
 import { SupportedConstraintsDialog } from "../components/SupportedConstraintsDialog";
 import { VideoMediaDeviceDialog } from "../components/VideoMediaDeviceDialog";
 import { VideoTrackInfoDialog } from "../components/VideoTrackInfoDialog";
@@ -37,6 +38,12 @@ export const TopPage: FC = () => {
     onFalsy: closeVideoTrackInfo,
   } = useBooleanState({ isTruthy: false });
 
+  const {
+    isTruthy: isOpenApplyConstraints,
+    onTruthy: openApplyConstraints,
+    onFalsy: closeApplyConstraints,
+  } = useBooleanState({ isTruthy: false });
+
   const fab = useMemo<AppLayoutProps["fab"]>(() => {
     if (isVideoPlayed) {
       return {
@@ -65,8 +72,12 @@ export const TopPage: FC = () => {
         label: "Show video track info",
         onClick: openVideoTrackInfo,
       },
+      {
+        label: "Show apply constraints",
+        onClick: openApplyConstraints,
+      },
     ],
-    [openSupportedConstraints, openVideoMediaDevice, openVideoTrackInfo]
+    [openApplyConstraints, openSupportedConstraints, openVideoMediaDevice, openVideoTrackInfo]
   );
 
   return (
@@ -78,6 +89,7 @@ export const TopPage: FC = () => {
       <SupportedConstraintsDialog onClose={closeSupportedConstraints} open={isOpenSupportedConstraints} />
       <VideoMediaDeviceDialog onClose={closeVideoMediaDevice} open={isVideoMediaDevice} />
       <VideoTrackInfoDialog onClose={closeVideoTrackInfo} open={isVideoTrackInfo} />
+      <ApplyConstraintsDialog onClose={closeApplyConstraints} open={isOpenApplyConstraints} />
     </AppLayout>
   );
 };
