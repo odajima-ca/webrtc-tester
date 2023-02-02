@@ -19,56 +19,63 @@ export const QrReaderPage: FC = () => {
   }, []);
 
   useEffect(() => {
-    const scan = async () => {
-      if (!isVideoPlayed) return;
-      if (!codeReader) return;
+    if (!isVideoPlayed) return;
+    if (!codeReader) return;
 
-      const canvas = canvasRef.current;
-      const video = videoRef.current;
+    const video = videoRef.current;
 
-      if (!canvas || !video) return;
+    if (!video) return;
 
-      const context = canvas.getContext("2d");
+    codeReader.decodeFromVideoElement(video as HTMLVideoElement, (result) => {
+      if (result) {
+        setResultText(result.getText());
+      }
+    });
+  }, [codeReader, isVideoPlayed, videoRef]);
 
-      if (!context) return;
-
-      // console.log("scan");
-
-      const height = video.videoHeight;
-      const width = video.videoWidth;
-
-      canvas.height = height;
-      canvas.width = width;
-
-      context.drawImage(video, 0, 0, width, height);
-      await codeReader.decodeFromVideoElement(video as HTMLVideoElement, (result) => {
-        if (result) {
-          setResultText(result.getText());
-        }
-      });
-
-      requestAnimationFrame(scan);
-    };
-
-    const timerId = requestAnimationFrame(scan);
-
-    return () => {
-      cancelAnimationFrame(timerId);
-    };
-  }, [canvasRef, codeReader, isVideoPlayed, videoRef]);
+  // useEffect(() => {
+  //   const scan = async () => {
+  //     if (!isVideoPlayed) return;
+  //     if (!codeReader) return;
+  //
+  //     const canvas = canvasRef.current;
+  //     const video = videoRef.current;
+  //
+  //     if (!canvas || !video) return;
+  //
+  //     const context = canvas.getContext("2d");
+  //
+  //     if (!context) return;
+  //
+  //     // console.log("scan");
+  //
+  //     const height = video.videoHeight;
+  //     const width = video.videoWidth;
+  //
+  //     canvas.height = height;
+  //     canvas.width = width;
+  //
+  //     // context.drawImage(video, 0, 0, width, height);
+  //     await codeReader.decodeFromVideoElement(video as HTMLVideoElement, (result) => {
+  //       if (result) {
+  //         setResultText(result.getText());
+  //       }
+  //     });
+  //
+  //     requestAnimationFrame(scan);
+  //   };
+  //
+  //   const timerId = requestAnimationFrame(scan);
+  //
+  //   return () => {
+  //     cancelAnimationFrame(timerId);
+  //   };
+  // }, [canvasRef, codeReader, isVideoPlayed, videoRef]);
 
   return (
     <AppLayout>
-      <Box
-        sx={{
-          "&>canvas": { height: "100%", objectFit: "contain", width: "100%" },
-          "&>video": { display: "none" },
-          height: "100%",
-          width: "100%",
-        }}
-      >
+      <Box sx={{ "&>video": { height: "100%", width: "100%" }, height: "100%", width: "100%" }}>
         <video height="100%" ref={videoRef} width="100%" />
-        <canvas height="100%" ref={canvasRef} width="100%" />
       </Box>
 
       {resultText}
