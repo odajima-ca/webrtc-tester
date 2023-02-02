@@ -6,6 +6,7 @@ import React, {
   PropsWithChildren,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -17,6 +18,7 @@ import { useSnackbar } from "./SnackbarProvider";
 
 type MediaStreamContextValue = {
   videoRef: MutableRefObject<HTMLVideoElement | null>;
+  canvasRef: MutableRefObject<HTMLCanvasElement | null>;
   startMediaStream: (args: { videoTrackConstraints?: MediaTrackConstraints } | void) => void | Promise<void>;
   stopMediaStream: VoidOrPromiseFunction;
   supportedConstraints?: MediaTrackSupportedConstraints;
@@ -35,6 +37,7 @@ type MediaStreamContextValue = {
 };
 
 const MediaStreamContext = createContext<MediaStreamContextValue>({
+  canvasRef: { current: null },
   currentVideoDeviceId: "",
   isVideoPlayed: false,
   mediaDevices: [],
@@ -67,6 +70,8 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
   } = useBooleanState({ isTruthy: false });
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   const startMediaStream = useCallback<MediaStreamContextValue["startMediaStream"]>(
     async (args) => {
@@ -231,6 +236,7 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const value = useMemo(
     () => ({
+      canvasRef,
       currentVideoDeviceId,
       isVideoPlayed,
       mediaDevices,
@@ -259,3 +265,13 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
 };
 
 export const useMediaStream = () => useContext(MediaStreamContext);
+
+export const useStopMediaStream = () => {
+  const { stopMediaStream } = useMediaStream();
+
+  useEffect(() => {
+    return () => {
+      stopMediaStream();
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+};

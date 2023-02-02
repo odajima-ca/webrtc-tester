@@ -1,71 +1,77 @@
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import StopIcon from "@mui/icons-material/Stop";
 import { Box } from "@mui/material";
-import React, { FC, useEffect, useMemo } from "react";
+import { BrowserQRCodeReader } from "@zxing/browser";
+import React, { FC, useEffect, useState } from "react";
 
-import { ApplyConstraintsDialog } from "../components/ApplyConstraintsDialog";
-import { DetectRTCDialog } from "../components/DetectRTCDialog";
-import { useBooleanState } from "../hooks/useBooleanState";
-import { AppLayout, AppLayoutProps } from "../layouts/AppLayout";
-import { useMediaStream } from "../providers/MediaStreamProvider";
+import { AppLayout } from "../layouts/AppLayout";
+import { useMediaStream, useStopMediaStream } from "../providers/MediaStreamProvider";
 
 export const QrReaderPage: FC = () => {
-  const { videoRef, stopMediaStream, startMediaStream, isVideoPlayed } = useMediaStream();
+  const [codeReader, setCodeReader] = useState<BrowserQRCodeReader | undefined>();
+
+  const [resultText, setResultText] = useState("");
+
+  const { videoRef, canvasRef, isVideoPlayed } = useMediaStream();
+  useStopMediaStream();
 
   useEffect(() => {
+    const newCodeReader = new BrowserQRCodeReader();
+    setCodeReader(newCodeReader);
+  }, []);
+
+  useEffect(() => {
+    const scan = async () => {
+      if (!isVideoPlayed) return;
+      if (!codeReader) return;
+
+      const canvas = canvasRef.current;
+      const video = videoRef.current;
+
+      if (!canvas || !video) return;
+
+      const context = canvas.getContext("2d");
+
+      if (!context) return;
+
+      // console.log("scan");
+
+      const height = video.videoHeight;
+      const width = video.videoWidth;
+
+      canvas.height = height;
+      canvas.width = width;
+
+      context.drawImage(video, 0, 0, width, height);
+      await codeReader.decodeFromVideoElement(video as HTMLVideoElement, (result) => {
+        if (result) {
+          setResultText(result.getText());
+        }
+      });
+
+      requestAnimationFrame(scan);
+    };
+
+    const timerId = requestAnimationFrame(scan);
+
     return () => {
-      stopMediaStream();
+      cancelAnimationFrame(timerId);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const {
-    isTruthy: isOpenApplyConstraints,
-    onTruthy: openApplyConstraints,
-    onFalsy: closeApplyConstraints,
-  } = useBooleanState({ isTruthy: false });
-
-  const {
-    isTruthy: isDetectRTC,
-    onTruthy: openDetectRTC,
-    onFalsy: closeDetectRTC,
-  } = useBooleanState({ isTruthy: false });
-
-  const fab = useMemo<AppLayoutProps["fab"]>(() => {
-    if (isVideoPlayed) {
-      return {
-        children: <StopIcon />,
-        onClick: () => stopMediaStream(),
-      };
-    }
-
-    return {
-      children: <PlayArrowIcon />,
-      onClick: () => startMediaStream(),
-    };
-  }, [isVideoPlayed, startMediaStream, stopMediaStream]);
-
-  const menuItems = useMemo<AppLayoutProps["menuItems"]>(
-    () => [
-      {
-        label: "Media Device Constraints",
-        onClick: openApplyConstraints,
-      },
-      {
-        label: "Detect RTC",
-        onClick: openDetectRTC,
-      },
-    ],
-    [openApplyConstraints, openDetectRTC]
-  );
+  }, [canvasRef, codeReader, isVideoPlayed, videoRef]);
 
   return (
-    <AppLayout fab={fab} menuItems={menuItems}>
-      <Box sx={{ "&>video": { height: "100%", width: "100%" }, height: "100%", width: "100%" }}>
+    <AppLayout>
+      <Box
+        sx={{
+          "&>canvas": { height: "100%", objectFit: "contain", width: "100%" },
+          "&>video": { display: "none" },
+          height: "100%",
+          width: "100%",
+        }}
+      >
         <video height="100%" ref={videoRef} width="100%" />
+        <canvas height="100%" ref={canvasRef} width="100%" />
       </Box>
 
-      <ApplyConstraintsDialog onClose={closeApplyConstraints} open={isOpenApplyConstraints} />
-      <DetectRTCDialog onClose={closeDetectRTC} open={isDetectRTC} />
+      {resultText}
     </AppLayout>
   );
 };

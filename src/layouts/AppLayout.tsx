@@ -1,11 +1,18 @@
 import MenuIcon from "@mui/icons-material/Menu";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { AppBar, Divider, Fab, FabProps, IconButton, Menu, MenuItem, MenuItemProps, Toolbar } from "@mui/material";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import StopIcon from "@mui/icons-material/Stop";
+import { AppBar, Divider, Fab, IconButton, Menu, MenuItem, Toolbar } from "@mui/material";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
-import React, { FC, MouseEventHandler, PropsWithChildren, ReactNode, useCallback, useState } from "react";
+import React, { FC, MouseEventHandler, PropsWithChildren, useCallback, useState } from "react";
 import { use100vh } from "react-div-100vh";
-import { Link, LinkProps } from "react-router-dom";
+import { Link } from "react-router-dom";
+
+import { ApplyConstraintsDialog } from "../components/ApplyConstraintsDialog";
+import { DetectRTCDialog } from "../components/DetectRTCDialog";
+import { VideoTrackInfoDialog } from "../components/VideoTrackInfoDialog";
+import { useBooleanState } from "../hooks/useBooleanState";
+import { useMediaStream } from "../providers/MediaStreamProvider";
 
 const StyledFab = styled(Fab)({
   left: 0,
@@ -16,17 +23,10 @@ const StyledFab = styled(Fab)({
   zIndex: 1,
 });
 
-type LinkMenuItemProps = Partial<Pick<LinkProps, "to"> & Pick<MenuItemProps, "onClick">> & {
-  label: ReactNode;
-};
-
-export type AppLayoutProps = PropsWithChildren<{
-  fab: FabProps;
-  menuItems?: LinkMenuItemProps[];
-}>;
-
-export const AppLayout: FC<AppLayoutProps> = ({ children, fab, menuItems = [] }) => {
+export const AppLayout: FC<PropsWithChildren> = ({ children }) => {
   const height = use100vh();
+
+  const { stopMediaStream, startMediaStream, isVideoPlayed } = useMediaStream();
 
   const [anchorLeftElement, setAnchorLeftElement] = useState<null | HTMLElement>(null);
 
@@ -38,6 +38,24 @@ export const AppLayout: FC<AppLayoutProps> = ({ children, fab, menuItems = [] })
     setAnchorLeftElement(null);
   };
 
+  const {
+    isTruthy: isVideoTrackInfo,
+    onTruthy: openVideoTrackInfo,
+    onFalsy: closeVideoTrackInfo,
+  } = useBooleanState({ isTruthy: false });
+
+  const {
+    isTruthy: isOpenApplyConstraints,
+    onTruthy: openApplyConstraints,
+    onFalsy: closeApplyConstraints,
+  } = useBooleanState({ isTruthy: false });
+
+  const {
+    isTruthy: isDetectRTC,
+    onTruthy: openDetectRTC,
+    onFalsy: closeDetectRTC,
+  } = useBooleanState({ isTruthy: false });
+
   return (
     <Box sx={{ height, pb: 7, width: "100vw" }}>
       {children}
@@ -48,7 +66,16 @@ export const AppLayout: FC<AppLayoutProps> = ({ children, fab, menuItems = [] })
             <MenuIcon />
           </IconButton>
 
-          <StyledFab color="secondary" {...fab} />
+          {isVideoPlayed ? (
+            <StyledFab color="secondary" onClick={() => stopMediaStream()}>
+              <StopIcon />
+            </StyledFab>
+          ) : (
+            <StyledFab color="secondary" onClick={() => startMediaStream()}>
+              <PlayArrowIcon />
+            </StyledFab>
+          )}
+
           <Box sx={{ flexGrow: 1 }} />
         </Toolbar>
       </AppBar>
@@ -74,32 +101,37 @@ export const AppLayout: FC<AppLayoutProps> = ({ children, fab, menuItems = [] })
 
         <Divider />
 
-        {menuItems.map((menuItem, index) => {
-          if (menuItem.to && menuItem.label) {
-            return (
-              <MenuItem component={Link} key={index} onClick={closeLeftMenu} to={menuItem.to}>
-                {menuItem.label}
-              </MenuItem>
-            );
-          }
+        <MenuItem
+          onClick={() => {
+            openVideoTrackInfo();
+            closeLeftMenu();
+          }}
+        >
+          Video Track
+        </MenuItem>
 
-          if (menuItem.onClick && menuItem.label) {
-            return (
-              <MenuItem
-                key={index}
-                onClick={(event) => {
-                  menuItem.onClick?.(event);
-                  closeLeftMenu();
-                }}
-              >
-                {menuItem.label}
-              </MenuItem>
-            );
-          }
+        <MenuItem
+          onClick={() => {
+            openApplyConstraints();
+            closeLeftMenu();
+          }}
+        >
+          Constraints
+        </MenuItem>
 
-          return null;
-        })}
+        <MenuItem
+          onClick={() => {
+            openDetectRTC();
+            closeLeftMenu();
+          }}
+        >
+          Detect RTC
+        </MenuItem>
       </Menu>
+
+      <VideoTrackInfoDialog onClose={closeVideoTrackInfo} open={isVideoTrackInfo} />
+      <ApplyConstraintsDialog onClose={closeApplyConstraints} open={isOpenApplyConstraints} />
+      <DetectRTCDialog onClose={closeDetectRTC} open={isDetectRTC} />
     </Box>
   );
 };
