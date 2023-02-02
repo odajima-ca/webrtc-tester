@@ -1,3 +1,4 @@
+import DetectRTC from "detectrtc";
 import React, {
   createContext,
   FC,
@@ -78,6 +79,8 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
           video: args?.videoTrackConstraints || true,
         });
         if (!mediaStream) return;
+
+        DetectRTC.load(noop);
 
         video.muted = true;
         video.volume = 0;

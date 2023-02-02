@@ -8,7 +8,7 @@ import { FullScreenDialog, FullScreenDialogProps } from "./FullScreenDialog";
 
 type FormValues = Required<Pick<MediaTrackConstraintSet, "deviceId">>;
 
-export const VideoMediaDeviceDialog: FC<Omit<FullScreenDialogProps, "title" | "onSubmit">> = (props) => {
+export const VideoMediaDeviceDialog: FC<Omit<FullScreenDialogProps, "title">> = (props) => {
   const { videoDevices, onChangeConstraints, currentVideoDeviceId } = useMediaStream();
 
   const { control, handleSubmit } = useForm<FormValues>({

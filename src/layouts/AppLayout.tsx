@@ -1,6 +1,6 @@
 import MenuIcon from "@mui/icons-material/Menu";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { AppBar, Fab, FabProps, IconButton, Menu, MenuItem, MenuItemProps, Toolbar } from "@mui/material";
+import { AppBar, Divider, Fab, FabProps, IconButton, Menu, MenuItem, MenuItemProps, Toolbar } from "@mui/material";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import React, { FC, MouseEventHandler, PropsWithChildren, ReactNode, useCallback, useState } from "react";
@@ -20,23 +20,12 @@ type LinkMenuItemProps = Partial<Pick<LinkProps, "to"> & Pick<MenuItemProps, "on
   label: ReactNode;
 };
 
-const leftMenuItems: LinkMenuItemProps[] = [
-  {
-    label: "Top",
-    to: "/",
-  },
-  {
-    label: "device",
-    to: "/device",
-  },
-];
-
 export type AppLayoutProps = PropsWithChildren<{
   fab: FabProps;
-  rightMenuItems?: LinkMenuItemProps[];
+  menuItems?: LinkMenuItemProps[];
 }>;
 
-export const AppLayout: FC<AppLayoutProps> = ({ children, fab, rightMenuItems = [] }) => {
+export const AppLayout: FC<AppLayoutProps> = ({ children, fab, menuItems = [] }) => {
   const height = use100vh();
 
   const [anchorLeftElement, setAnchorLeftElement] = useState<null | HTMLElement>(null);
@@ -47,16 +36,6 @@ export const AppLayout: FC<AppLayoutProps> = ({ children, fab, rightMenuItems = 
 
   const closeLeftMenu = () => {
     setAnchorLeftElement(null);
-  };
-
-  const [anchorRightElement, setAnchorRightElement] = useState<null | HTMLElement>(null);
-
-  const openRightMenu = useCallback<MouseEventHandler<HTMLButtonElement>>((event) => {
-    setAnchorRightElement(event.currentTarget);
-  }, []);
-
-  const closeRightMenu = () => {
-    setAnchorRightElement(null);
   };
 
   return (
@@ -71,12 +50,6 @@ export const AppLayout: FC<AppLayoutProps> = ({ children, fab, rightMenuItems = 
 
           <StyledFab color="secondary" {...fab} />
           <Box sx={{ flexGrow: 1 }} />
-
-          {rightMenuItems.length > 0 && (
-            <IconButton color="inherit" onClick={openRightMenu} size="small" sx={{ mr: 2 }}>
-              <MoreVertIcon />
-            </IconButton>
-          )}
         </Toolbar>
       </AppBar>
 
@@ -91,7 +64,17 @@ export const AppLayout: FC<AppLayoutProps> = ({ children, fab, rightMenuItems = 
         open={!!anchorLeftElement}
         transformOrigin={{ horizontal: "left", vertical: "bottom" }}
       >
-        {leftMenuItems.map((menuItem, index) => {
+        <MenuItem component={Link} onClick={closeLeftMenu} to="/">
+          TOP
+        </MenuItem>
+
+        <MenuItem component={Link} onClick={closeLeftMenu} to="/qr-reader/">
+          QR Reader
+        </MenuItem>
+
+        <Divider />
+
+        {menuItems.map((menuItem, index) => {
           if (menuItem.to && menuItem.label) {
             return (
               <MenuItem component={Link} key={index} onClick={closeLeftMenu} to={menuItem.to}>
@@ -100,49 +83,23 @@ export const AppLayout: FC<AppLayoutProps> = ({ children, fab, rightMenuItems = 
             );
           }
 
+          if (menuItem.onClick && menuItem.label) {
+            return (
+              <MenuItem
+                key={index}
+                onClick={(event) => {
+                  menuItem.onClick?.(event);
+                  closeLeftMenu();
+                }}
+              >
+                {menuItem.label}
+              </MenuItem>
+            );
+          }
+
           return null;
         })}
       </Menu>
-
-      {rightMenuItems.length > 0 && (
-        <Menu
-          PaperProps={{
-            elevation: 0,
-          }}
-          anchorEl={anchorRightElement}
-          anchorOrigin={{ horizontal: "right", vertical: "top" }}
-          onClick={closeRightMenu}
-          onClose={closeRightMenu}
-          open={!!anchorRightElement}
-          transformOrigin={{ horizontal: "right", vertical: "bottom" }}
-        >
-          {rightMenuItems.map((menuItem, index) => {
-            if (menuItem.to && menuItem.label) {
-              return (
-                <MenuItem component={Link} key={index} onClick={closeLeftMenu} to={menuItem.to}>
-                  {menuItem.label}
-                </MenuItem>
-              );
-            }
-
-            if (menuItem.onClick && menuItem.label) {
-              return (
-                <MenuItem
-                  key={index}
-                  onClick={(event) => {
-                    menuItem.onClick?.(event);
-                    closeLeftMenu();
-                  }}
-                >
-                  {menuItem.label}
-                </MenuItem>
-              );
-            }
-
-            return null;
-          })}
-        </Menu>
-      )}
     </Box>
   );
 };

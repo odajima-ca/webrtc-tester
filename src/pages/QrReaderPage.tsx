@@ -5,12 +5,11 @@ import React, { FC, useEffect, useMemo } from "react";
 
 import { ApplyConstraintsDialog } from "../components/ApplyConstraintsDialog";
 import { DetectRTCDialog } from "../components/DetectRTCDialog";
-import { VideoTrackInfoDialog } from "../components/VideoTrackInfoDialog";
 import { useBooleanState } from "../hooks/useBooleanState";
 import { AppLayout, AppLayoutProps } from "../layouts/AppLayout";
 import { useMediaStream } from "../providers/MediaStreamProvider";
 
-export const TopPage: FC = () => {
+export const QrReaderPage: FC = () => {
   const { videoRef, stopMediaStream, startMediaStream, isVideoPlayed } = useMediaStream();
 
   useEffect(() => {
@@ -18,12 +17,6 @@ export const TopPage: FC = () => {
       stopMediaStream();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const {
-    isTruthy: isVideoTrackInfo,
-    onTruthy: openVideoTrackInfo,
-    onFalsy: closeVideoTrackInfo,
-  } = useBooleanState({ isTruthy: false });
 
   const {
     isTruthy: isOpenApplyConstraints,
@@ -54,10 +47,6 @@ export const TopPage: FC = () => {
   const menuItems = useMemo<AppLayoutProps["menuItems"]>(
     () => [
       {
-        label: "Video Track Info",
-        onClick: openVideoTrackInfo,
-      },
-      {
         label: "Media Device Constraints",
         onClick: openApplyConstraints,
       },
@@ -66,7 +55,7 @@ export const TopPage: FC = () => {
         onClick: openDetectRTC,
       },
     ],
-    [openApplyConstraints, openDetectRTC, openVideoTrackInfo]
+    [openApplyConstraints, openDetectRTC]
   );
 
   return (
@@ -75,7 +64,6 @@ export const TopPage: FC = () => {
         <video height="100%" ref={videoRef} width="100%" />
       </Box>
 
-      <VideoTrackInfoDialog onClose={closeVideoTrackInfo} open={isVideoTrackInfo} />
       <ApplyConstraintsDialog onClose={closeApplyConstraints} open={isOpenApplyConstraints} />
       <DetectRTCDialog onClose={closeDetectRTC} open={isDetectRTC} />
     </AppLayout>
