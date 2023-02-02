@@ -81,7 +81,7 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
 
         const mediaStream = await navigator.mediaDevices?.getUserMedia({
           audio: false,
-          video: args?.videoTrackConstraints || { resizeMode: "crop-and-scale" },
+          video: args?.videoTrackConstraints || true,
         });
         if (!mediaStream) return;
 
