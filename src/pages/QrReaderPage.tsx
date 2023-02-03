@@ -39,6 +39,8 @@ export const QrReaderPage: FC = () => {
       canvas.height = width;
       canvas.width = width;
 
+      console.info("Scan");
+
       context.drawImage(video, width / 2, height / 2, width, width, 0, 0, width, width);
 
       try {
