@@ -37,7 +37,7 @@ export const QrReaderPage: FC = () => {
       canvas.width = width;
 
       console.debug("QR Decode");
-      context.drawImage(video, 0, 0, width, height);
+      context.drawImage(video, width / 4, height / 4, width / 2, height / 2);
 
       try {
         const result = await codeReader.decodeFromCanvas(canvas);
