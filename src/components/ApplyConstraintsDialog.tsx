@@ -123,12 +123,12 @@ export const ApplyConstraintsDialog: FC<Omit<FullScreenDialogProps, "title" | "o
                   type="number"
                 />
                 <ButtonGroup disabled={!supportedConstraints?.aspectRatio} variant="outlined">
-                  {aspectRatioValues.map(({ width, height }) => {
+                  {aspectRatioValues.map(({ width, height }, index) => {
                     const aspectRatioValue = width / height;
                     const aspectRatioText = Math.floor(aspectRatioValue * 100) / 100;
 
                     return (
-                      <Button onClick={() => field.onChange(aspectRatioValue)} type="button">
+                      <Button key={index} onClick={() => field.onChange(aspectRatioValue)} type="button">
                         {width}:{height} ({aspectRatioText})
                       </Button>
                     );
@@ -187,7 +187,12 @@ export const ApplyConstraintsDialog: FC<Omit<FullScreenDialogProps, "title" | "o
                 <Typography gutterBottom variant="h6">
                   deviceId
                 </Typography>
-                <RadioGroup {...field}>
+                <RadioGroup
+                  onChange={(event, newValue) => {
+                    field.onChange(newValue);
+                  }}
+                  value={field.value}
+                >
                   {videoDevices.map((videoDevice, index) => (
                     <FormControlLabel
                       control={<Radio />}
@@ -251,7 +256,12 @@ export const ApplyConstraintsDialog: FC<Omit<FullScreenDialogProps, "title" | "o
                 <Typography gutterBottom variant="h6">
                   facingMode
                 </Typography>
-                <RadioGroup {...field}>
+                <RadioGroup
+                  onChange={(event, newValue) => {
+                    field.onChange(newValue);
+                  }}
+                  value={field.value}
+                >
                   {videoTrackInfo?.capabilities.facingMode?.map((facingMode, index) => (
                     <FormControlLabel control={<Radio />} key={index} label={facingMode} value={facingMode} />
                   ))}
@@ -271,9 +281,11 @@ export const ApplyConstraintsDialog: FC<Omit<FullScreenDialogProps, "title" | "o
                 <Slider
                   max={videoTrackInfo?.capabilities.frameRate?.max}
                   min={videoTrackInfo?.capabilities.frameRate?.min}
-                  onChange={field.onChange}
+                  onChange={(event, newValue) => {
+                    field.onChange(newValue);
+                  }}
                   step={1}
-                  value={Number(field.value)}
+                  value={_.toInteger(field.value)}
                   valueLabelDisplay="on"
                 />
               </FormControl>
@@ -291,9 +303,11 @@ export const ApplyConstraintsDialog: FC<Omit<FullScreenDialogProps, "title" | "o
                 <Slider
                   max={videoTrackInfo?.capabilities.height?.max}
                   min={videoTrackInfo?.capabilities.height?.min}
-                  onChange={field.onChange}
+                  onChange={(event, newValue) => {
+                    field.onChange(newValue);
+                  }}
                   step={1}
-                  value={Number(field.value)}
+                  value={_.toInteger(field.value)}
                   valueLabelDisplay="on"
                 />
               </FormControl>
@@ -311,9 +325,11 @@ export const ApplyConstraintsDialog: FC<Omit<FullScreenDialogProps, "title" | "o
                 <Slider
                   max={videoTrackInfo?.capabilities.width?.max}
                   min={videoTrackInfo?.capabilities.width?.min}
-                  onChange={field.onChange}
+                  onChange={(event, newValue) => {
+                    field.onChange(newValue);
+                  }}
                   step={1}
-                  value={Number(field.value)}
+                  value={_.toInteger(field.value)}
                   valueLabelDisplay="on"
                 />
               </FormControl>
@@ -331,9 +347,12 @@ export const ApplyConstraintsDialog: FC<Omit<FullScreenDialogProps, "title" | "o
                 <Slider
                   max={videoTrackInfo?.capabilities.latency?.max}
                   min={videoTrackInfo?.capabilities.latency?.min}
-                  onChange={field.onChange}
+                  onChange={(event, newValue) => {
+                    console.debug(newValue);
+                    field.onChange(newValue);
+                  }}
                   step={1}
-                  value={Number(field.value)}
+                  value={_.toInteger(field.value)}
                   valueLabelDisplay="on"
                 />
               </FormControl>

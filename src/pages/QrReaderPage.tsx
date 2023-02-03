@@ -30,14 +30,17 @@ export const QrReaderPage: FC = () => {
 
       if (!context) return;
 
-      const height = video.videoHeight;
-      const width = video.videoWidth;
+      // video.height = video.videoHeight;
+      // video.width = video.videoWidth;
+
+      const height = video.videoHeight / 2;
+      const width = video.videoWidth / 2;
 
       canvas.height = height;
       canvas.width = width;
 
-      console.debug("QR Decode");
-      context.drawImage(video, width / 4, height / 4, width / 2, height / 2);
+      console.debug("QR Decode", width, height);
+      context.drawImage(video, width / 2, height / 2, width, height, 0, 0, width, height);
 
       try {
         const result = await codeReader.decodeFromCanvas(canvas);
