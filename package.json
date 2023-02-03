@@ -84,6 +84,7 @@
     "react-scripts": "5.0.1",
     "react-use": "^17",
     "typescript": "^4",
+    "vconsole": "^3",
     "web-vitals": "^2"
   },
   "devDependencies": {
