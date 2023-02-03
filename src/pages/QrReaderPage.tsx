@@ -36,11 +36,10 @@ export const QrReaderPage: FC = () => {
       const height = video.videoHeight / 2;
       const width = video.videoWidth / 2;
 
-      canvas.height = height;
+      canvas.height = width;
       canvas.width = width;
 
-      console.debug("QR Decode", width, height);
-      context.drawImage(video, width / 2, height / 2, width, height, 0, 0, width, height);
+      context.drawImage(video, width / 2, height / 2, width, width, 0, 0, width, width);
 
       try {
         const result = await codeReader.decodeFromCanvas(canvas);
@@ -80,11 +79,12 @@ export const QrReaderPage: FC = () => {
           <Box
             sx={{
               border: "1px solid black",
-              height: "50%",
-              left: "25%",
+              height: "50vw",
+              left: "50%",
               position: "absolute",
-              top: "25%",
-              width: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "50vw",
             }}
           />
         </Box>
