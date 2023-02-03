@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { BrowserQRCodeReader } from "@zxing/browser";
 import React, { FC, useEffect, useState } from "react";
 
@@ -62,10 +62,31 @@ export const QrReaderPage: FC = () => {
 
   return (
     <AppLayout>
-      <Box sx={{ "&>video": { height: "100%", width: "100%" }, height: "100%", width: "100%" }}>
-        <video height="100%" ref={videoRef} width="100%" />
-        <canvas ref={canvasRef} style={{ display: "none" }} />
-      </Box>
+      <Stack
+        alignItems="center"
+        justifyContent="center"
+        sx={{
+          "& canvas": { display: "none" },
+          "& video": { height: "100%", width: "100%" },
+          height: "100%",
+          width: "100%",
+        }}
+      >
+        <Box sx={{ position: "relative" }}>
+          <video height="100%" ref={videoRef} width="100%" />
+          <Box
+            sx={{
+              border: "1px solid black",
+              height: "50%",
+              left: "25%",
+              position: "absolute",
+              top: "25%",
+              width: "50%",
+            }}
+          />
+        </Box>
+        <canvas ref={canvasRef} />
+      </Stack>
     </AppLayout>
   );
 };
