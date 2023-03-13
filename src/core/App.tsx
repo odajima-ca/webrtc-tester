@@ -23,6 +23,18 @@ export const App: FC = () => {
     };
   }, [height]);
 
+  useEffect(() => {
+    const unhandledrejection: Window["onunhandledrejection"] = (event) => {
+      console.log("onUnHandledRejection", event);
+    };
+
+    window.addEventListener("unhandledrejection", unhandledrejection);
+
+    return () => {
+      window.removeEventListener("unhandledrejection", unhandledrejection);
+    };
+  }, []);
+
   return (
     <SnackbarProvider>
       <MediaStreamProvider>
