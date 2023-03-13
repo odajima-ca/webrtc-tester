@@ -89,6 +89,7 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
 
         video.muted = true;
         video.volume = 0;
+        video.playsInline = true;
         video.setAttribute("playsinline", "playsinline");
         try {
           video.srcObject = mediaStream;
