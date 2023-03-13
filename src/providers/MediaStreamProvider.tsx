@@ -93,9 +93,11 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
         try {
           video.srcObject = mediaStream;
         } catch (e) {
-          console.error(e);
+          console.error("set srcObject", e);
         }
-        await video.play();
+        await video.play().catch((error) => {
+          console.error("video.play.error", error);
+        });
         playVideoState();
 
         setSupportedConstraints(navigator.mediaDevices?.getSupportedConstraints());
