@@ -12,7 +12,7 @@ export const TopPage: FC = () => {
   return (
     <AppLayout>
       <Box sx={{ "&>video": { height: "100%", width: "100%" }, height: "100%", width: "100%" }}>
-        <Video controls={true} height="100%" ref={videoRef} width="100%" />
+        <Video height="100%" ref={videoRef} width="100%" />
       </Box>
     </AppLayout>
   );
