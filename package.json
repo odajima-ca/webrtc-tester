@@ -78,6 +78,7 @@
     "react": "^18",
     "react-div-100vh": "^0.7.0",
     "react-dom": "^18",
+    "react-error-boundary": "^3",
     "react-highlight": "^0",
     "react-hook-form": "^7",
     "react-router-dom": "^6",
