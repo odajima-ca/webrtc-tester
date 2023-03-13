@@ -87,11 +87,11 @@ export const MediaStreamProvider: FC<PropsWithChildren> = ({ children }) => {
 
         DetectRTC.load(noop);
 
-        video.muted = true;
-        video.volume = 0;
-        video.setAttribute("playsinline", "playsinline");
+        // video.muted = true;
+        // video.volume = 0;
+        // video.setAttribute("playsinline", "playsinline");
         video.srcObject = mediaStream;
-        await video.play();
+        // await video.play();
         playVideoState();
 
         setSupportedConstraints(navigator.mediaDevices?.getSupportedConstraints());
