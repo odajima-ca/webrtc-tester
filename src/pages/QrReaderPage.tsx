@@ -2,6 +2,7 @@ import { Box, Stack } from "@mui/material";
 import { BrowserQRCodeReader } from "@zxing/browser";
 import React, { FC, useEffect, useState } from "react";
 
+import { Video } from "../components/Video";
 import { AppLayout } from "../layouts/AppLayout";
 import { useMediaStream, useStopMediaStream } from "../providers/MediaStreamProvider";
 
@@ -30,13 +31,10 @@ export const QrReaderPage: FC = () => {
 
       if (!context) return;
 
-      // video.height = video.videoHeight;
-      // video.width = video.videoWidth;
-
       const height = video.videoHeight / 2;
       const width = video.videoWidth / 2;
 
-      canvas.height = width;
+      canvas.height = height;
       canvas.width = width;
 
       console.info("Scan");
@@ -77,7 +75,7 @@ export const QrReaderPage: FC = () => {
         }}
       >
         <Box sx={{ position: "relative" }}>
-          <video height="100%" ref={videoRef} width="100%" />
+          <Video height="100%" ref={videoRef} width="100%" />
           <Box
             sx={{
               border: "1px solid black",
