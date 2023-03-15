@@ -31,8 +31,8 @@ export const QrReaderPage: FC = () => {
 
       if (!context) return;
 
-      const height = video.videoHeight / 2;
-      const width = video.videoWidth / 2;
+      const height = video.videoHeight / 3;
+      const width = video.videoWidth / 3;
 
       canvas.height = height;
       canvas.width = width;
